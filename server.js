@@ -29,12 +29,18 @@ function getImageMetadata(filePath) {
         const fallbackDate = stat.birthtime ? stat.birthtime.toLocaleString() : "Unknown date";        
         const buffer = fs.readFileSync(filePath);
         const parser = exifParser.create(buffer);
-        const result = parser.parse();
+        let result = {};
 
-        console.log("Parsed EXIF result:", result.tags); // 👀 Debugging line
+        try {
+            result = parser.parse(); // Attempt to parse EXIF data
+        } catch (err) {
+            console.error(`EXIF parsing failed for file: ${filePath} - Error: ${err.message}`);
+            // Handle invalid EXIF data by returning default metadata
+            return { title: "", date: fallbackDate };
+        }
 
-        const date = result.tags.DateTimeOriginal || result.tags.CreateDate || "";
-        const title = result.tags.ImageDescription || result.tags.UserComment || "";
+        const date = result.tags?.DateTimeOriginal || result.tags?.CreateDate || "";
+        const title = result.tags?.ImageDescription || result.tags?.UserComment || "";
 
         const formattedDate = date
         ? new Date(date * 1000).toLocaleString()
@@ -42,10 +48,11 @@ function getImageMetadata(filePath) {
 
         return { title, date: formattedDate };
     } catch (err) {
-        console.error("Metadata extraction failed:", err);
-        return { title: "", date: "Unknown" };
+        console.error(`Metadata extraction failed for file: ${filePath} - Error: ${err.message}`);
+        return { title: "", date: "Unknown" }; // Return default values on error
     }
 }
+
 
 
 // Recursively get all images
@@ -94,18 +101,31 @@ app.get("/image-file", (req, res) => {
     res.sendFile(imagePath);
 });
 
+app.get("/edit", (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Update metadata endpoint
 app.post("/update-metadata", async (req, res) => {
     const { filePath, newTitle } = req.body;
 
     try {
-        await exiftool.write(filePath, { ImageDescription: newTitle });
+        // Write the new metadata with exiftool (this may create a backup)
+        await exiftool.write(filePath, { ImageDescription: newTitle }, { overwrite_original: true });
+
+        // Check for backup file and delete it
+        const backupFilePath = filePath + "_original"; // Check for the file with _original suffix
+        if (fs.existsSync(backupFilePath)) {
+            fs.unlinkSync(backupFilePath); // Delete the backup file
+        }
+
         res.status(200).send("Metadata updated successfully!");
     } catch (error) {
         console.error("Failed to update metadata:", error);
         res.status(500).send("Failed to update metadata.");
     }
 });
+
 
 // Upload images
 app.post("/upload-image", upload.single("image"), (req, res) => {

@@ -12,19 +12,49 @@
         <div class="button-container">
             <input id="imageDate" placeholder="Capture Date" readonly />
             <textarea id="imageTitle" placeholder="Image title..."></textarea>
-            <button onclick="saveImageMetadata()">💾 Save Metadata</button>
+            <button id="saveBtn" onclick="saveImageMetadata()">💾 Save Metadata</button>
 
             <button onclick="loadRandomImage()">🔄 Random Image</button>
             <input type="file" id="imageInput" accept="image/*" onchange="uploadImage()" />
-            <button onclick="document.getElementById('imageInput').click()">⬆️ Upload Image</button>
+            <button id="uploadBtn" onclick="document.getElementById('imageInput').click()">⬆️ Upload Image</button>
         </div>
 
         <!-- Image display frame -->
         <div class="image-container">
             <img id="randomImage" src="" alt="Random Image">
         </div>
+
+        <script>
+            // Show buttons only if URL contains '/edit'
+            document.addEventListener('DOMContentLoaded', () => {
+                const path = window.location.pathname;
+                const saveBtn = document.getElementById('saveBtn');
+                const uploadBtn = document.getElementById('uploadBtn');
+
+                // Hide buttons by default
+                if (saveBtn) saveBtn.style.display = 'none';
+                if (uploadBtn) uploadBtn.style.display = 'none';
+
+                // Show buttons if path includes '/edit'
+                if (path.includes('/edit')) {
+                    if (saveBtn) saveBtn.style.display = 'block';
+                    if (uploadBtn) uploadBtn.style.display = 'block';
+                }
+            });
+        </script>        
     </div>
 
     <script src="script.js"></script>
 </body>
 </html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Check if URL contains '/edit' and show buttons
+        if (window.location.pathname.includes('/edit')) {
+            document.querySelectorAll('#saveBtn, #uploadBtn').forEach(btn => {
+                btn.style.display = 'inline-block';
+            });
+        }
+    });
+</script>
