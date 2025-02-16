@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Image Viewer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Left-side button panel -->
+        <div class="button-container">
+            <input id="imageDate" placeholder="Capture Date" readonly />
+            <textarea id="imageTitle" placeholder="Image title..."></textarea>
+            <button onclick="saveImageMetadata()">💾 Save Metadata</button>
+
+            <button onclick="loadRandomImage()">🔄 Random Image</button>
+            <input type="file" id="imageInput" accept="image/*" onchange="uploadImage()" />
+            <button onclick="document.getElementById('imageInput').click()">⬆️ Upload Image</button>
+        </div>
+
+        <!-- Image display frame -->
+        <div class="image-container">
+            <img id="randomImage" src="" alt="Random Image">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
