@@ -74,13 +74,42 @@ function getAllImages(directory) {
 
 // Get a random image
 // Get a random image
-app.get("/random-image", (req, res) => {
-    const imageFiles = getAllImages(imagesDir);
-    if (imageFiles.length === 0) {
-        return res.status(404).send("No images found");
+// app.get("/random-image", (req, res) => {
+//     const imageFiles = getAllImages(imagesDir);
+//     if (imageFiles.length === 0) {
+//         return res.status(404).send("No images found");
+//     }
+
+//     const randomImage = imageFiles[Math.floor(Math.random() * imageFiles.length)];
+//     const metadata = getImageMetadata(randomImage.path);
+
+//     res.json({
+//         imageUrl: `/image-file?path=${encodeURIComponent(randomImage.path)}`,
+//         title: metadata.title || "",
+//         date: metadata.date || "Unknown date",
+//         filePath: randomImage.path
+//     });
+// });
+
+app.post("/random-image", (req, res) => {
+    const viewedImages = req.body.viewedImages || [];
+    console.log("Received viewed images:", viewedImages); // Debug log
+
+    let imageFiles = getAllImages(imagesDir);
+    console.log("Total images available:", imageFiles.length); // Debug log
+
+    // Filtrera bort bilder som redan visats
+    const availableImages = imageFiles.filter(img => !viewedImages.includes(img.path));
+    
+    console.log("Available images after filtering:", availableImages.length); // Debug log
+    if (availableImages.length === 0) {
+        console.log("All images have been viewed. Resetting list.");
+        //availableImages.push(...imageFiles);
+        res.json({ reset: true });
+        return
     }
 
-    const randomImage = imageFiles[Math.floor(Math.random() * imageFiles.length)];
+    const randomImage = availableImages[Math.floor(Math.random() * availableImages.length)];
     const metadata = getImageMetadata(randomImage.path);
 
     res.json({

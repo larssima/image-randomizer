@@ -2,15 +2,31 @@
 window.onload = loadRandomImage;
 
 let currentImagePath = "";
+let viewedImages = JSON.parse(localStorage.getItem("viewedImages")) || [];
 
 function loadRandomImage() {
-    fetch("/random-image")
+    fetch("/random-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ viewedImages })
+        })
         .then(response => response.json())
         .then(data => {
+            if (data.reset) {
+                console.log("All images have been viewed. Resetting LocalStorage.");
+                viewedImages = []; // Reset viewed images
+                localStorage.removeItem("viewedImages"); // Clear LocalStorage
+            }
             document.getElementById("randomImage").src = data.imageUrl;
             document.getElementById("imageDate").value = data.date || "Unknown date";
             document.getElementById("imageTitle").value = data.title || "";
             currentImagePath = data.filePath;
+
+            // Add to viewed images and save to LocalStorage
+            if (!viewedImages.includes(data.filePath)) {
+                viewedImages.push(data.filePath);
+                localStorage.setItem("viewedImages", JSON.stringify(viewedImages));
+            }            
         })
         .catch(error => console.error("Error loading image:", error));
 }
