@@ -16,6 +16,7 @@ function loadRandomImage() {
                 console.log("All images have been viewed. Resetting LocalStorage.");
                 viewedImages = []; // Reset viewed images
                 localStorage.removeItem("viewedImages"); // Clear LocalStorage
+                return
             }
             document.getElementById("randomImage").src = data.imageUrl;
             document.getElementById("imageDate").value = data.date || "Unknown date";
