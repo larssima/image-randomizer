@@ -92,8 +92,9 @@ function getAllImages(directory) {
 // });
 
 app.post("/random-image", (req, res) => {
+    console.clear();
     const viewedImages = req.body.viewedImages || [];
-    console.log("Received viewed images:", viewedImages); // Debug log
+    //console.log("Received viewed images:", viewedImages); // Debug log
 
     let imageFiles = getAllImages(imagesDir);
     console.log("Total images available:", imageFiles.length); // Debug log

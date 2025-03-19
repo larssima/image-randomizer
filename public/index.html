@@ -13,10 +13,12 @@
             <input id="imageDate" placeholder="Capture Date" readonly />
             <textarea id="imageTitle" placeholder="Image title..."></textarea>
             <button id="saveBtn" onclick="saveImageMetadata()">💾 Save Metadata</button>
-
-            <button onclick="loadRandomImage()">🔄 Random Image</button>
             <input type="file" id="imageInput" accept="image/*" onchange="uploadImage()" />
             <button id="uploadBtn" onclick="document.getElementById('imageInput').click()">⬆️ Upload Image</button>
+
+            <button onclick="loadRandomImage()">🔄 Random Image</button>
+            <button id="autoViewBtn" onclick="toggleAutoView()">Auto View Off</button>
+            <input type="number" id="intervalInput" placeholder="Seconds" min="1" value="10">
         </div>
 
         <!-- Image display frame -->
@@ -34,11 +36,13 @@
                 // Hide buttons by default
                 if (saveBtn) saveBtn.style.display = 'none';
                 if (uploadBtn) uploadBtn.style.display = 'none';
+                if (intervalInput) intervalInput.style.display = 'none';
 
                 // Show buttons if path includes '/edit'
                 if (path.includes('/edit')) {
                     if (saveBtn) saveBtn.style.display = 'block';
                     if (uploadBtn) uploadBtn.style.display = 'block';
+                    if (intervalInput) intervalInput.style.display = 'block';
                 }
             });
         </script>        

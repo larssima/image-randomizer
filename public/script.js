@@ -3,6 +3,8 @@ window.onload = loadRandomImage;
 
 let currentImagePath = "";
 let viewedImages = JSON.parse(localStorage.getItem("viewedImages")) || [];
+let autoViewActive = false;
+let autoViewInterval = null;
 
 function loadRandomImage() {
     fetch("/random-image", {
@@ -13,7 +15,7 @@ function loadRandomImage() {
         .then(response => response.json())
         .then(data => {
             if (data.reset) {
-                console.log("All images have been viewed. Resetting LocalStorage.");
+                //console.log("All images have been viewed. Resetting LocalStorage.");
                 viewedImages = []; // Reset viewed images
                 localStorage.removeItem("viewedImages"); // Clear LocalStorage
                 setTimeout(loadRandomImage, 100);
@@ -70,4 +72,19 @@ function uploadImage() {
         }
     })
     .catch(error => console.error("Error uploading image:", error));
+}
+
+function toggleAutoView() {
+    const button = document.getElementById("autoViewBtn");
+    const intervalInput = document.getElementById("intervalInput");
+
+    if (!autoViewActive) {
+        const interval = parseInt(intervalInput.value) * 1000 || 5000; // Default to 5 seconds
+        autoViewInterval = setInterval(loadRandomImage, interval);
+        button.textContent = "Auto View On";
+    } else {
+        clearInterval(autoViewInterval);
+        button.textContent = "Auto View Off";
+    }
+    autoViewActive = !autoViewActive;
 }
